@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Echelon Form Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section, .results-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .section-title {
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 1.2rem;
+        }
+        
+        .matrix-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .dimension-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        select, button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .secondary-btn {
+            background-color: #2ecc71;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .danger-btn {
+            background-color: #e74c3c;
+        }
+        
+        .danger-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .matrix-input-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .matrix-table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+        
+        .matrix-table td {
+            padding: 8px;
+            text-align: center;
+        }
+        
+        .matrix-input {
+            width: 70px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .matrix-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .keypad button {
+            padding: 15px 5px;
+            font-size: 1.2rem;
+        }
+        
+        .keypad .clear-btn {
+            grid-column: span 2;
+        }
+        
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .matrix-result {
+            overflow-x: auto;
+        }
+        
+        .result-matrix {
+            border-collapse: collapse;
+            margin: 10px auto;
+        }
+        
+        .result-matrix td {
+            width: 60px;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .pivot {
+            background-color: #ffeb3b;
+            font-weight: bold;
+        }
+        
+        .zero-row {
+            background-color: #f8f9fa;
+        }
+        
+        .steps-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .steps-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .step-description {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .step-matrix {
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+        
+        .step-matrix td {
+            width: 50px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        
+        .highlight-row {
+            background-color: #e3f2fd;
+        }
+        
+        .highlight-col {
+            background-color: #fff8e1;
+        }
+        
+        .tutorial-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .definition {
+            margin-bottom: 20px;
+        }
+        
+        .definition h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .matrix-input {
+                width: 60px;
+                height: 45px;
+            }
+            
+            .keypad {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .example-matrices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .example-btn {
+            background-color: #9b59b6;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+        
+        .example-btn:hover {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> Matrix Echelon Form Calculator</h1>
+            <p class="subtitle">Calculate Row Echelon Form (REF) and Reduced Row Echelon Form (RREF) with step-by-step solutions</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="input-section">
+                <h2 class="section-title"><i class="fas fa-keyboard"></i> Input Matrix</h2>
+                
+                <div class="matrix-controls">
+                    <div class="dimension-selector">
+                        <label for="rows">Rows:</label>
+                        <select id="rows">
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                    
+                    <div class="dimension-selector">
+                        <label for="cols">Columns:</label>
+                        <select id="cols">
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                    
+                    <button id="update-matrix" class="secondary-btn">
+                        <i class="fas fa-sync-alt"></i> Update Size
+                    </button>
+                    
+                    <button id="random-matrix" class="secondary-btn">
+                        <i class="fas fa-random"></i> Random Matrix
+                    </button>
+                    
+                    <button id="clear-matrix" class="danger-btn">
+                        <i class="fas fa-trash-alt"></i> Clear
+                    </button>
+                </div>
+                
+                <div class="matrix-input-container">
+                    <table class="matrix-table" id="input-matrix">
+                        <!-- Matrix input will be generated here -->
+                    </table>
+                </div>
+                
+                <div class="example-matrices">
+                    <p>Try example matrices:</p>
+                    <button class="example-btn" data-example="1">Example 1 (3x3)</button>
+                    <button class="example-btn" data-example="2">Example 2 (3x4)</button>
+                    <button class="example-btn" data-example="3">Example 3 (4x4)</button>
+                </div>
+                
+                <div class="keypad">
+                    <button class="num-btn" data-value="1">1</button>
+                    <button class="num-btn" data-value="2">2</button>
+                    <button class="num-btn" data-value="3">3</button>
+                    <button class="num-btn" data-value="4">4</button>
+                    <button class="num-btn" data-value="5">5</button>
+                    <button class="num-btn" data-value="6">6</button>
+                    <button class="num-btn" data-value="7">7</button>
+                    <button class="num-btn" data-value="8">8</button>
+                    <button class="num-btn" data-value="9">9</button>
+                    <button class="num-btn" data-value="0">0</button>
+                    <button class="num-btn" data-value="-">-</button>
+                    <button class="num-btn" data-value=".">.</button>
+                    <button class="clear-btn" id="clear-input"><i class="fas fa-backspace"></i> Clear Input</button>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="calculate-ref" class="secondary-btn">
+                        <i class="fas fa-calculator"></i> Calculate REF
+                    </button>
+                    <button id="calculate-rref">
+                        <i class="fas fa-calculator"></i> Calculate RREF
+                    </button>
+                </div>
+            </section>
+            
+            <section class="results-section">
+                <h2 class="section-title"><i class="fas fa-chart-bar"></i> Results</h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Calculating echelon form...</p>
+                </div>
+                
+                <div class="results-container" id="results-container">
+                    <div class="info-box">
+                        <p>Enter a matrix and click "Calculate REF" or "Calculate RREF" to see results here.</p>
+                    </div>
+                    
+                    <div id="original-matrix" style="display: none;">
+                        <h3><i class="fas fa-th"></i> Original Matrix</h3>
+                        <div class="matrix-result">
+                            <table class="result-matrix" id="original-matrix-table">
+                                <!-- Original matrix will be displayed here -->
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="ref-result" style="display: none;">
+                        <h3><i class="fas fa-layer-group"></i> Row Echelon Form (REF)</h3>
+                        <div class="matrix-result">
+                            <table class="result-matrix" id="ref-matrix-table">
+                                <!-- REF matrix will be displayed here -->
+                            </table>
+                        </div>
+                        <p><small><strong>Pivots</strong> are highlighted in yellow. Rows with all zeros are at the bottom.</small></p>
+                    </div>
+                    
+                    <div id="rref-result" style="display: none;">
+                        <h3><i class="fas fa-layer-group"></i> Reduced Row Echelon Form (RREF)</h3>
+                        <div class="matrix-result">
+                            <table class="result-matrix" id="rref-matrix-table">
+                                <!-- RREF matrix will be displayed here -->
+                            </table>
+                        </div>
+                        <p><small><strong>Pivots</strong> are highlighted in yellow. Each pivot is 1 and is the only non-zero entry in its column.</small></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <section class="steps-section">
+            <h2 class="section-title"><i class="fas fa-list-ol"></i> Step-by-Step Solution</h2>
+            <div class="steps-container" id="steps-container">
+                <div class="info-box">
+                    <p>The step-by-step solution will appear here after calculation.</p>
+                </div>
+            </div>
+        </section>
+        
+       
+        
+        <footer>
+            <p>Matrix Echelon Form Calculator &copy; 2025 | Designed for Linear Algebra Students</p>
+            <p> بالتوفيق عقبال الدرجات اللي تسعدكم</p>
+            <p> دعيوا للي مسوتنه</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let currentMatrix = [];
+        let steps = [];
+        let activeInput = null;
+
+        // Initialize the matrix input table
+        function initializeMatrix() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const table = document.getElementById('input-matrix');
+            
+            // Clear the table
+            table.innerHTML = '';
+            
+            // Initialize currentMatrix
+            currentMatrix = Array(rows).fill().map(() => Array(cols).fill(0));
+            
+            // Create rows and cells
+            for (let i = 0; i < rows; i++) {
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.createElement('td');
+                    const input = document.createElement('input');
+                    
+                    input.type = 'text';
+                    input.className = 'matrix-input';
+                    input.value = '0';
+                    input.dataset.row = i;
+                    input.dataset.col = j;
+                    
+                    // Add event listeners
+                    input.addEventListener('focus', function() {
+                        activeInput = this;
+                    });
+                    
+                    input.addEventListener('input', function() {
+                        updateCurrentMatrix();
+                    });
+                    
+                    cell.appendChild(input);
+                    row.appendChild(cell);
+                }
+                
+                table.appendChild(row);
+            }
+            
+            updateCurrentMatrix();
+        }
+
+        // Update the currentMatrix from input values
+        function updateCurrentMatrix() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const input = document.querySelector(`.matrix-input[data-row="${i}"][data-col="${j}"]`);
+                    if (input) {
+                        const value = parseFloat(input.value);
+                        currentMatrix[i][j] = isNaN(value) ? 0 : value;
+                    }
+                }
+            }
+        }
+
+        // Generate a random matrix
+        function generateRandomMatrix() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    // Generate random integers between -9 and 9
+                    const value = Math.floor(Math.random() * 19) - 9;
+                    currentMatrix[i][j] = value;
+                    
+                    const input = document.querySelector(`.matrix-input[data-row="${i}"][data-col="${j}"]`);
+                    if (input) {
+                        input.value = value;
+                    }
+                }
+            }
+        }
+
+        // Clear the matrix (set all values to 0)
+        function clearMatrix() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    currentMatrix[i][j] = 0;
+                    
+                    const input = document.querySelector(`.matrix-input[data-row="${i}"][data-col="${j}"]`);
+                    if (input) {
+                        input.value = '0';
+                    }
+                }
+            }
+            
+            // Clear results
+            clearResults();
+        }
+
+        // Clear results display
+        function clearResults() {
+            document.getElementById('original-matrix').style.display = 'none';
+            document.getElementById('ref-result').style.display = 'none';
+            document.getElementById('rref-result').style.display = 'none';
+            document.getElementById('steps-container').innerHTML = 
+                '<div class="info-box"><p>The step-by-step solution will appear here after calculation.</p></div>';
+        }
+
+        // Display a matrix in a table
+        function displayMatrix(matrix, tableId, highlightPivots = false, isRREF = false) {
+            const table = document.getElementById(tableId);
+            table.innerHTML = '';
+            
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+            
+            // Find pivot positions if needed
+            let pivotPositions = [];
+            if (highlightPivots) {
+                pivotPositions = findPivotPositions(matrix, isRREF);
+            }
+            
+            for (let i = 0; i < rows; i++) {
+                const row = document.createElement('tr');
+                
+                // Check if this is a zero row
+                const isZeroRow = matrix[i].every(val => Math.abs(val) < 0.0001);
+                
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.createElement('td');
+                    const value = matrix[i][j];
+                    
+                    // Format the value
+                    let displayValue;
+                    if (Math.abs(value) < 0.0001) {
+                        displayValue = '0';
+                    } else if (Math.abs(value - Math.round(value)) < 0.0001) {
+                        displayValue = Math.round(value).toString();
+                    } else {
+                        displayValue = value.toFixed(3).replace(/\.?0+$/, '');
+                    }
+                    
+                    cell.textContent = displayValue;
+                    
+                    // Highlight pivot positions
+                    if (highlightPivots && pivotPositions.some(pos => pos.row === i && pos.col === j)) {
+                        cell.className = 'pivot';
+                    }
+                    
+                    // Style zero rows
+                    if (isZeroRow) {
+                        cell.style.backgroundColor = '#f8f9fa';
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                table.appendChild(row);
+            }
+        }
+
+        // Find pivot positions in a matrix
+        function findPivotPositions(matrix, isRREF = false) {
+            const rows = matrix.length;
+            const cols = matrix[0].length;
+            const pivotPositions = [];
+            let currentCol = 0;
+            
+            for (let i = 0; i < rows; i++) {
+                // Skip zero rows
+                if (matrix[i].every(val => Math.abs(val) < 0.0001)) {
+                    continue;
+                }
+                
+                // Find the first non-zero element in this row
+                while (currentCol < cols && Math.abs(matrix[i][currentCol]) < 0.0001) {
+                    currentCol++;
+                }
+                
+                if (currentCol < cols) {
+                    pivotPositions.push({row: i, col: currentCol});
+                    currentCol++;
+                }
+            }
+            
+            return pivotPositions;
+        }
+
+        // Calculate Row Echelon Form (REF)
+        function calculateREF() {
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            
+            // Simulate calculation delay for better UX
+            setTimeout(() => {
+                updateCurrentMatrix();
+                steps = [];
+                
+                // Create a copy of the matrix to work with
+                let matrix = currentMatrix.map(row => [...row]);
+                const rows = matrix.length;
+                const cols = matrix[0].length;
+                
+                // Add initial step
+                addStep("Starting matrix", matrix, "We begin with the original matrix.");
+                
+                let pivotRow = 0;
+                
+                for (let col = 0; col < cols && pivotRow < rows; col++) {
+                    // Find the pivot (non-zero entry) in this column
+                    let pivot = -1;
+                    for (let row = pivotRow; row < rows; row++) {
+                        if (Math.abs(matrix[row][col]) > 0.0001) {
+                            pivot = row;
+                            break;
+                        }
+                    }
+                    
+                    if (pivot === -1) {
+                        continue; // No pivot in this column
+                    }
+                    
+                    // Swap rows if pivot is not in the current pivot row
+                    if (pivot !== pivotRow) {
+                        [matrix[pivot], matrix[pivotRow]] = [matrix[pivotRow], matrix[pivot]];
+                        addStep(`Swap row ${pivot+1} with row ${pivotRow+1}`, matrix, 
+                               `We swap rows to bring a non-zero element to the pivot position in column ${col+1}.`);
+                    }
+                    
+                    // Make the pivot element 1 (optional for REF, but we'll do it for clarity)
+                    const pivotValue = matrix[pivotRow][col];
+                    if (Math.abs(pivotValue - 1) > 0.0001 && Math.abs(pivotValue) > 0.0001) {
+                        for (let j = col; j < cols; j++) {
+                            matrix[pivotRow][j] /= pivotValue;
+                        }
+                        
+                        // Round to avoid floating point errors
+                        matrix[pivotRow] = matrix[pivotRow].map(val => Math.abs(val) < 0.0001 ? 0 : val);
+                        
+                        addStep(`Divide row ${pivotRow+1} by ${pivotValue.toFixed(3)}`, matrix,
+                               `We normalize the pivot in row ${pivotRow+1} to make calculations easier.`);
+                    }
+                    
+                    // Eliminate entries below the pivot
+                    for (let row = pivotRow + 1; row < rows; row++) {
+                        const factor = matrix[row][col];
+                        if (Math.abs(factor) > 0.0001) {
+                            for (let j = col; j < cols; j++) {
+                                matrix[row][j] -= factor * matrix[pivotRow][j];
+                            }
+                            
+                            // Round to avoid floating point errors
+                            matrix[row] = matrix[row].map(val => Math.abs(val) < 0.0001 ? 0 : val);
+                            
+                            addStep(`Row ${row+1} = Row ${row+1} - (${factor.toFixed(3)} × Row ${pivotRow+1})`, matrix,
+                                   `We eliminate the entry below the pivot in column ${col+1}.`);
+                        }
+                    }
+                    
+                    pivotRow++;
+                }
+                
+                // Display results
+                displayResults(matrix, 'REF');
+                
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results-container').style.display = 'flex';
+            }, 500);
+        }
+
+        // Calculate Reduced Row Echelon Form (RREF)
+        function calculateRREF() {
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            
+            // Simulate calculation delay for better UX
+            setTimeout(() => {
+                updateCurrentMatrix();
+                steps = [];
+                
+                // Create a copy of the matrix to work with
+                let matrix = currentMatrix.map(row => [...row]);
+                const rows = matrix.length;
+                const cols = matrix[0].length;
+                
+                // Add initial step
+                addStep("Starting matrix", matrix, "We begin with the original matrix.");
+                
+                let pivotRow = 0;
+                let pivotCols = [];
+                
+                // Forward elimination (Gaussian elimination)
+                for (let col = 0; col < cols && pivotRow < rows; col++) {
+                    // Find the pivot (non-zero entry) in this column
+                    let pivot = -1;
+                    for (let row = pivotRow; row < rows; row++) {
+                        if (Math.abs(matrix[row][col]) > 0.0001) {
+                            pivot = row;
+                            break;
+                        }
+                    }
+                    
+                    if (pivot === -1) {
+                        continue; // No pivot in this column
+                    }
+                    
+                    // Swap rows if pivot is not in the current pivot row
+                    if (pivot !== pivotRow) {
+                        [matrix[pivot], matrix[pivotRow]] = [matrix[pivotRow], matrix[pivot]];
+                        addStep(`Swap row ${pivot+1} with row ${pivotRow+1}`, matrix, 
+                               `We swap rows to bring a non-zero element to the pivot position in column ${col+1}.`);
+                    }
+                    
+                    // Make the pivot element 1
+                    const pivotValue = matrix[pivotRow][col];
+                    if (Math.abs(pivotValue - 1) > 0.0001) {
+                        for (let j = col; j < cols; j++) {
+                            matrix[pivotRow][j] /= pivotValue;
+                        }
+                        
+                        // Round to avoid floating point errors
+                        matrix[pivotRow] = matrix[pivotRow].map(val => Math.abs(val) < 0.0001 ? 0 : val);
+                        
+                        addStep(`Divide row ${pivotRow+1} by ${pivotValue.toFixed(3)}`, matrix,
+                               `We make the pivot equal to 1.`);
+                    }
+                    
+                    // Eliminate entries above and below the pivot
+                    for (let row = 0; row < rows; row++) {
+                        if (row !== pivotRow && Math.abs(matrix[row][col]) > 0.0001) {
+                            const factor = matrix[row][col];
+                            for (let j = col; j < cols; j++) {
+                                matrix[row][j] -= factor * matrix[pivotRow][j];
+                            }
+                            
+                            // Round to avoid floating point errors
+                            matrix[row] = matrix[row].map(val => Math.abs(val) < 0.0001 ? 0 : val);
+                            
+                            addStep(`Row ${row+1} = Row ${row+1} - (${factor.toFixed(3)} × Row ${pivotRow+1})`, matrix,
+                                   `We eliminate the entry in column ${col+1} from row ${row+1}.`);
+                        }
+                    }
+                    
+                    pivotCols.push(col);
+                    pivotRow++;
+                }
+                
+                // Display results
+                displayResults(matrix, 'RREF');
+                
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results-container').style.display = 'flex';
+            }, 500);
+        }
+
+        // Add a step to the step-by-step solution
+        function addStep(title, matrix, description) {
+            steps.push({
+                title: title,
+                matrix: matrix.map(row => [...row]), // Create a copy
+                description: description
+            });
+        }
+
+        // Display the results
+        function displayResults(resultMatrix, type) {
+            // Show original matrix
+            document.getElementById('original-matrix').style.display = 'block';
+            displayMatrix(currentMatrix, 'original-matrix-table');
+            
+            // Show appropriate result
+            if (type === 'REF') {
+                document.getElementById('ref-result').style.display = 'block';
+                document.getElementById('rref-result').style.display = 'none';
+                displayMatrix(resultMatrix, 'ref-matrix-table', true, false);
+            } else {
+                document.getElementById('ref-result').style.display = 'none';
+                document.getElementById('rref-result').style.display = 'block';
+                displayMatrix(resultMatrix, 'rref-matrix-table', true, true);
+            }
+            
+            // Display steps
+            displaySteps();
+        }
+
+        // Display the step-by-step solution
+        function displaySteps() {
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+            
+            if (steps.length === 0) {
+                container.innerHTML = '<div class="info-box"><p>No steps to display.</p></div>';
+                return;
+            }
+            
+            steps.forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'step';
+                
+                const title = document.createElement('div');
+                title.className = 'step-title';
+                title.innerHTML = `<i class="fas fa-step-forward"></i> Step ${index+1}: ${step.title}`;
+                
+                const description = document.createElement('div');
+                description.className = 'step-description';
+                description.textContent = step.description;
+                
+                const matrixTable = document.createElement('table');
+                matrixTable.className = 'step-matrix';
+                
+                // Create the matrix table
+                const rows = step.matrix.length;
+                const cols = step.matrix[0].length;
+                
+                for (let i = 0; i < rows; i++) {
+                    const row = document.createElement('tr');
+                    
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('td');
+                        const value = step.matrix[i][j];
+                        
+                        // Format the value
+                        let displayValue;
+                        if (Math.abs(value) < 0.0001) {
+                            displayValue = '0';
+                        } else if (Math.abs(value - Math.round(value)) < 0.0001) {
+                            displayValue = Math.round(value).toString();
+                        } else {
+                            displayValue = value.toFixed(3).replace(/\.?0+$/, '');
+                        }
+                        
+                        cell.textContent = displayValue;
+                        row.appendChild(cell);
+                    }
+                    
+                    matrixTable.appendChild(row);
+                }
+                
+                stepDiv.appendChild(title);
+                stepDiv.appendChild(description);
+                stepDiv.appendChild(matrixTable);
+                container.appendChild(stepDiv);
+            });
+        }
+
+        // Load example matrices
+        function loadExample(exampleNum) {
+            let exampleMatrix;
+            
+            switch(exampleNum) {
+                case 1:
+                    // 3x3 matrix example
+                    exampleMatrix = [
+                        [2, 1, -1],
+                        [-3, -1, 2],
+                        [-2, 1, 2]
+                    ];
+                    break;
+                case 2:
+                    // 3x4 matrix example
+                    exampleMatrix = [
+                        [1, 2, -1, 4],
+                        [2, 4, 3, 5],
+                        [-1, -2, 6, -7]
+                    ];
+                    break;
+                case 3:
+                    // 4x4 matrix example
+                    exampleMatrix = [
+                        [1, 2, 3, 4],
+                        [2, 4, 6, 8],
+                        [3, 6, 9, 12],
+                        [4, 8, 12, 16]
+                    ];
+                    break;
+                default:
+                    return;
+            }
+            
+            // Update matrix dimensions if needed
+            const rows = exampleMatrix.length;
+            const cols = exampleMatrix[0].length;
+            
+            if (parseInt(document.getElementById('rows').value) !== rows) {
+                document.getElementById('rows').value = rows;
+            }
+            
+            if (parseInt(document.getElementById('cols').value) !== cols) {
+                document.getElementById('cols').value = cols;
+            }
+            
+            // Update the matrix input
+            initializeMatrix();
+            
+            // Fill with example values
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    currentMatrix[i][j] = exampleMatrix[i][j];
+                    const input = document.querySelector(`.matrix-input[data-row="${i}"][data-col="${j}"]`);
+                    if (input) {
+                        input.value = exampleMatrix[i][j];
+                    }
+                }
+            }
+            
+            // Clear any previous results
+            clearResults();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the matrix input
+            initializeMatrix();
+            
+            // Update matrix size when button is clicked
+            document.getElementById('update-matrix').addEventListener('click', function() {
+                initializeMatrix();
+                clearResults();
+            });
+            
+            // Generate random matrix
+            document.getElementById('random-matrix').addEventListener('click', function() {
+                generateRandomMatrix();
+                clearResults();
+            });
+            
+            // Clear matrix
+            document.getElementById('clear-matrix').addEventListener('click', clearMatrix);
+            
+            // Calculate REF
+            document.getElementById('calculate-ref').addEventListener('click', calculateREF);
+            
+            // Calculate RREF
+            document.getElementById('calculate-rref').addEventListener('click', calculateRREF);
+            
+            // Number pad buttons
+            document.querySelectorAll('.num-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (activeInput) {
+                        const value = this.dataset.value;
+                        
+                        if (value === '-') {
+                            // Handle negative sign
+                            if (activeInput.value.startsWith('-')) {
+                                activeInput.value = activeInput.value.substring(1);
+                            } else {
+                                activeInput.value = '-' + activeInput.value;
+                            }
+                        } else if (value === '.') {
+                            // Handle decimal point
+                            if (!activeInput.value.includes('.')) {
+                                activeInput.value += '.';
+                            }
+                        } else {
+                            // Handle numbers
+                            if (activeInput.value === '0' || activeInput.value === '-0') {
+                                activeInput.value = activeInput.value.replace('0', value);
+                            } else {
+                                activeInput.value += value;
+                            }
+                        }
+                        
+                        // Trigger input event to update matrix
+                        activeInput.dispatchEvent(new Event('input'));
+                    }
+                });
+            });
+            
+            // Clear input button
+            document.getElementById('clear-input').addEventListener('click', function() {
+                if (activeInput) {
+                    activeInput.value = '0';
+                    activeInput.dispatchEvent(new Event('input'));
+                }
+            });
+            
+            // Example matrix buttons
+            document.querySelectorAll('.example-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const exampleNum = parseInt(this.dataset.example);
+                    loadExample(exampleNum);
+                });
+            });
+            
+            // Update matrix when dimensions are changed via dropdown
+            document.getElementById('rows').addEventListener('change', function() {
+                initializeMatrix();
+                clearResults();
+            });
+            
+            document.getElementById('cols').addEventListener('change', function() {
+                initializeMatrix();
+                clearResults();
+            });
+        });
+    </script>
+</body>
+</html>
